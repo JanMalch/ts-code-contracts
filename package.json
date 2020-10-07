@@ -1,0 +1,68 @@
+{
+  "name": "ts-code-contracts",
+  "version": "1.0.0",
+  "description": "Code Contracts for TypeScript",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "// TESTS": "tsd needs the index.d.ts file from the build but index.js breaks the test coverage for jest",
+    "pretest": "npm run build && rimraf index.js",
+    "test": "jest && tsd",
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint --fix index.ts",
+    "prettier": "npx prettier --write **/*.{ts,html,scss,json,js,json,md,yaml} --ignore-path .gitignore",
+    "release": "npx standard-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JanMalch/ts-code-contracts.git"
+  },
+  "keywords": [
+    "Code",
+    "Contracts",
+    "Code",
+    "Quality",
+    "TypeScript"
+  ],
+  "author": "JanMalch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JanMalch/ts-code-contracts/issues"
+  },
+  "homepage": "https://github.com/JanMalch/ts-code-contracts#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^10.0.0",
+    "@commitlint/config-conventional": "^10.0.0",
+    "@types/jest": "^26.0.13",
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.9.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.3.0",
+    "jest": "^26.4.2",
+    "lint-staged": "^10.3.0",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
+    "standard-version": "^9.0.0",
+    "ts-jest": "^26.3.0",
+    "tsd": "^0.13.1",
+    "typescript": "^4.0.2"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged --relative --concurrent=1",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  }
+}
