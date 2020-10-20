@@ -64,6 +64,25 @@ export function requires(
 }
 
 /**
+ * Requires the given value not to be `null` or `undefined`, if it is a `PreconditionError` will be thrown.
+ * @param value that must be `NonNullable`
+ * @param message an optional message for the error
+ * @see requires
+ * @example
+ * function myFun(name: string | null) {
+ *   const nameNonNull = requiresNonNullish(name, 'Name must be defined');
+ *   nameNonNull.toUpperCase(); // no error!
+ * }
+ */
+export function requiresNonNullish<T>(
+  value: T,
+  message = 'Value must be defined'
+): NonNullable<T> {
+  requires(isDefined(value), message);
+  return value;
+}
+
+/**
  * Checks that the given condition is met, if not a `IllegalStateError` will be thrown.
  * Use it to verify that the object is in a correct state.
  * @param condition the condition that must be `true`
@@ -86,6 +105,29 @@ export function checks(
 }
 
 /**
+ * Checks that the given value is not `null` or `undefined`, if not a `IllegalStateError` will be thrown.
+ * @param value must be `true`
+ * @param message an optional message for the error
+ * @see IllegalStateError
+ * @see checks
+ * @example
+ * class Socket {
+ * data : Data | null = null;
+ * send() {
+ *     const DataNonNull = checkNonNullable(this.data, 'Socket data is not available');
+ *     DataNonNull.send(); //no error!
+ *   }
+ * }
+ */
+export function checksNonNullish<T>(
+  value: T,
+  message = 'Callee invariant violation'
+): NonNullable<T> {
+  checks(isDefined(value), message);
+  return value;
+}
+
+/**
  * Ensures that the given condition is met, if not a `PostconditionError` will be thrown.
  * Use it to verify that your function behaved correctly.
  * @param condition the condition that must be `true`
@@ -93,8 +135,8 @@ export function checks(
  * @see PostconditionError
  * @example
  * async function myFun() {
- *   await post({ id: 0, name: 'John' });
- *   const entity = await get(0);
+ *   await createPerson({ id: 0, name: 'John' });
+ *   const entity = await findById(0); // returns null if not present
  *   ensures(isDefined(entity), 'Failed to persist entity on server');
  * }
  */
@@ -105,6 +147,26 @@ export function ensures(
   if (!condition) {
     throw new PostconditionError(message);
   }
+}
+
+/**
+ * Ensures the value is not `null` or `undefined`, if not a `PostconditionError` will be thrown.
+ * @param value that must be `defined`
+ * @param message an optional message for the error
+ * @see ensures
+ * @example
+ * async function myFun() : Person {
+ *   await createPerson({ id: 0, name: 'John' });
+ *   const entity = await findById(0);
+ *   return ensuresNonNullish(entity, 'Failed to persist entity on server');
+ *   }
+ */
+export function ensuresNonNullish<T>(
+  value: T,
+  message = 'Unmet postcondition'
+): NonNullable<T> {
+  ensures(isDefined(value), message);
+  return value;
 }
 
 /**
@@ -181,6 +243,7 @@ export function error<T>(
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any, new-cap */
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 /**
