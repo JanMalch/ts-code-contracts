@@ -2,13 +2,16 @@ import {
   AssertionError,
   asserts,
   checks,
+  checksNonNullish,
   ensures,
+  ensuresNonNullish,
   error,
   IllegalStateError,
   isDefined,
   PostconditionError,
   PreconditionError,
   requires,
+  requiresNonNullish,
   unreachable,
   useIf,
 } from './index';
@@ -61,6 +64,38 @@ describe('utils', () => {
     });
   });
 
+  describe('NonNullish contract tests', () => {
+    const contractTest = (
+      contract: <T>(value: T, message?: string) => NonNullable<T>,
+      errorType: new (...args: any[]) => Error,
+      defaultMessage: string
+    ): void => {
+      describe(contract.name, () => {
+        it('should not error if the value is defined', () => {
+          expect(() => contract('A nice String')).not.toThrowError();
+        });
+        it('should throw an Error if the value is not defined', () => {
+          expect(() => contract(null)).toThrowError(
+            // eslint-disable-next-line new-cap
+            new errorType(defaultMessage)
+          );
+        });
+      });
+    };
+
+    contractTest(
+      requiresNonNullish,
+      PreconditionError,
+      'Value must be defined'
+    );
+    contractTest(
+      checksNonNullish,
+      IllegalStateError,
+      'Callee invariant violation'
+    );
+    contractTest(ensuresNonNullish, PostconditionError, 'Unmet postcondition');
+  });
+
   describe('isDefined', () => {
     it('should return true for defined values', () => {
       expect(isDefined('TypeScript')).toBe(true);
@@ -78,6 +113,7 @@ describe('utils', () => {
     interface Named {
       name: string;
     }
+
     function isNamed(value: any): value is Named {
       return value != null && typeof value.name === 'string';
     }
@@ -117,6 +153,7 @@ describe('utils', () => {
         A,
         B,
       }
+
       function myFun(foo: MyEnum): string {
         switch (foo) {
           case MyEnum.A:
@@ -127,6 +164,7 @@ describe('utils', () => {
             unreachable(foo);
         }
       }
+
       expect(() => myFun(MyEnum.A)).not.toThrow();
       expect(() => myFun(MyEnum.B)).not.toThrow();
     });
@@ -147,6 +185,7 @@ describe('utils', () => {
       function isEmail(value: string): value is Email {
         return !!value && value.includes('@');
       }
+
       /** Returns `true` if the given value meets the requirements. */
       function isGoodPassword(value: string): value is Password {
         return !!value && value.length >= 8;
@@ -154,6 +193,7 @@ describe('utils', () => {
 
       // make sure to use the nominal type in later functions
       function insert(email: Email, password: Password): void {}
+
       // the signup endpoint
       function signUp(email: string, password: string) {
         // use the contracts with your type guards ...
