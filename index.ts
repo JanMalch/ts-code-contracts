@@ -64,8 +64,8 @@ export function requires(
 }
 
 /**
- * Requires the given value not to be `null` or `undefined`, if it is a `PreconditionError` will be thrown.
- * @param value that must be `NonNullable`
+ * Requires the given value not to be `null` or `undefined`, otherwise a `PreconditionError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
  * @param message an optional message for the error
  * @see requires
  * @example
@@ -76,7 +76,7 @@ export function requires(
  */
 export function requiresNonNullish<T>(
   value: T,
-  message = 'Value must be defined'
+  message = 'Value must not be null or undefined'
 ): NonNullable<T> {
   requires(isDefined(value), message);
   return value;
@@ -90,6 +90,7 @@ export function requiresNonNullish<T>(
  * @see IllegalStateError
  * @example
  * class Socket {
+ *   private isOpen = false;
  *   send(data: Data) {
  *     check(this.isOpen, 'Socket must be open');
  *   }
@@ -105,23 +106,22 @@ export function checks(
 }
 
 /**
- * Checks that the given value is not `null` or `undefined`, if not a `IllegalStateError` will be thrown.
- * @param value must be `true`
+ * Checks that the given value is not `null` or `undefined`, otherwise a `IllegalStateError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
  * @param message an optional message for the error
- * @see IllegalStateError
  * @see checks
  * @example
  * class Socket {
- * data : Data | null = null;
- * send() {
- *     const DataNonNull = checkNonNullable(this.data, 'Socket data is not available');
- *     DataNonNull.send(); //no error!
+ *   data : Data | null = null;
+ *   send() {
+ *     const dataNonNull = checksNonNullish(this.data, 'Data must be available');
+ *     dataNonNull.send(); // no compiler error!
  *   }
  * }
  */
 export function checksNonNullish<T>(
   value: T,
-  message = 'Callee invariant violation'
+  message = 'Value must not be null or undefined'
 ): NonNullable<T> {
   checks(isDefined(value), message);
   return value;
@@ -150,20 +150,20 @@ export function ensures(
 }
 
 /**
- * Ensures the value is not `null` or `undefined`, if not a `PostconditionError` will be thrown.
- * @param value that must be `defined`
+ * Ensures that the given value is not `null` or `undefined`, otherwise a `PostconditionError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
  * @param message an optional message for the error
  * @see ensures
  * @example
- * async function myFun() : Person {
- *   await createPerson({ id: 0, name: 'John' });
- *   const entity = await findById(0);
+ * function myFun(): Person {
+ *   createPerson({ id: 0, name: 'John' });
+ *   const entity = findById(0); // returns null if not present
  *   return ensuresNonNullish(entity, 'Failed to persist entity on server');
- *   }
+ * }
  */
 export function ensuresNonNullish<T>(
   value: T,
-  message = 'Unmet postcondition'
+  message = 'Value must not be null or undefined'
 ): NonNullable<T> {
   ensures(isDefined(value), message);
   return value;
