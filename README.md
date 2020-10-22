@@ -5,7 +5,7 @@
 [![coverage](https://img.shields.io/badge/coverage-100%25-success)](https://github.com/JanMalch/ts-code-contracts/blob/master/jest.config.js#L14-L17)
 [![minified + gzip](https://badgen.net/bundlephobia/minzip/ts-code-contracts)](https://bundlephobia.com/result?p=ts-code-contracts)
 
-_Code contracts to improve your TypeScript code._
+__Design by contract with TypeScript.__
 
 ## Installation & Usage
 
