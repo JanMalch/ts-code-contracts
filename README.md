@@ -60,6 +60,28 @@ export function requires(
 ): asserts condition;
 ```
 
+#### `requiresNonNullish`
+
+A variation of `requires` that will either return the value if it's defined, or throw if it isn't.
+
+```ts
+/**
+ * Requires the given value not to be `null` or `undefined`, otherwise a `PreconditionError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
+ * @param message an optional message for the error
+ * @see requires
+ * @example
+ * function myFun(name: string | null) {
+ *   const nameNonNull = requiresNonNullish(name, 'Name must be defined');
+ *   nameNonNull.toUpperCase(); // no error!
+ * }
+ */
+export function requiresNonNullish<T>(
+  value: T,
+  message = 'Value must not be null or undefined'
+): NonNullable<T>;
+``` 
+
 ### `checks`
 
 Use it to check for an illegal state.
@@ -84,6 +106,31 @@ export function checks(
 ): asserts condition;
 ```
 
+#### `checksNonNullish`
+
+A variation of `checks` that will either return the value if it's defined, or throw if it isn't.
+
+```ts
+/**
+ * Checks that the given value is not `null` or `undefined`, otherwise a `IllegalStateError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
+ * @param message an optional message for the error
+ * @see checks
+ * @example
+ * class Socket {
+ *   data : Data | null = null;
+ *   send() {
+ *     const dataNonNull = checksNonNullish(this.data, 'Data must be available');
+ *     dataNonNull.send(); // no compiler error!
+ *   }
+ * }
+ */
+export function checksNonNullish<T>(
+  value: T,
+  message = 'Value must not be null or undefined'
+): NonNullable<T>;
+```
+
 ### `ensures`
 
 Use it to verify that your code behaved correctly.
@@ -106,6 +153,29 @@ export function ensures(
   condition: boolean,
   message: string = 'Unmet postcondition'
 ): asserts condition;
+```
+
+#### `ensuresNonNullish`
+
+A variation of `ensures` that will either return the value if it's defined, or throw if it isn't.
+
+```ts
+/**
+ * Ensures that the given value is not `null` or `undefined`, otherwise a `PostconditionError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
+ * @param message an optional message for the error
+ * @see ensures
+ * @example
+ * function myFun(): Person {
+ *   createPerson({ id: 0, name: 'John' });
+ *   const entity = findById(0); // returns null if not present
+ *   return ensuresNonNullish(entity, 'Failed to persist entity on server');
+ * }
+ */
+export function ensuresNonNullish<T>(
+  value: T,
+  message = 'Value must not be null or undefined'
+): NonNullable<T>;
 ```
 
 ### `unreachable`
