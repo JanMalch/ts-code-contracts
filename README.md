@@ -29,7 +29,7 @@ You can now import the following functions `from 'ts-code-contracts'`:
   - [`useIf` for assignments](#useif)
 
 Make sure to read the `@example`s in the documentation below
-or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L175-L205)
+or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L166-L196)
 and [typing assistance](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test-d.ts#L54-L65)!
 
 ## Contracts

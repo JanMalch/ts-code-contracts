@@ -50,8 +50,7 @@ describe('contracts', () => {
 describe('NonNullish contracts', () => {
   const contractTest = (
     contract: <T>(value: T, message?: string) => NonNullable<T>,
-    errorType: new (...args: any[]) => Error,
-    defaultMessage: string
+    errorType: new (...args: any[]) => Error
   ): void => {
     describe(contract.name, () => {
       it('should not error if the value is defined', () => {
@@ -60,23 +59,15 @@ describe('NonNullish contracts', () => {
       it('should throw an Error if the value is not defined', () => {
         expect(() => contract(null)).toThrowError(
           // eslint-disable-next-line new-cap
-          new errorType(defaultMessage)
+          new errorType('Value must not be null or undefined')
         );
       });
     });
   };
 
-  contractTest(
-    requiresNonNullish,
-    PreconditionError,
-    'Value must be defined'
-  );
-  contractTest(
-    checksNonNullish,
-    IllegalStateError,
-    'Callee invariant violation'
-  );
-  contractTest(ensuresNonNullish, PostconditionError, 'Unmet postcondition');
+  contractTest(requiresNonNullish, PreconditionError);
+  contractTest(checksNonNullish, IllegalStateError);
+  contractTest(ensuresNonNullish, PostconditionError);
 });
 
 describe('utils', () => {
