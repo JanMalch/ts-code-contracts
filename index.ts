@@ -196,31 +196,6 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
   return value != null;
 }
 
-/**
- * Returns a function that will return the passed in value, if it passes the given type guard.
- * If not, the given contract will throw an error with the given message.
- * @param predicate the type guard that the value must pass
- * @param contract the contract for context
- * @param contractMessage the message for the contract
- * @example
- * function myFun(foo: string | null) {
- *   const bar = useIf(isDefined)(foo);
- * }
- */
-export function useIf<T, U extends T = T>(
-  predicate: (value: T | U) => value is U,
-  contract: (
-    condition: boolean,
-    message?: string
-  ) => asserts condition = requires,
-  contractMessage?: string
-): (value: T | U) => U {
-  return (value: T | U): U => {
-    contract(predicate(value), contractMessage);
-    return value;
-  };
-}
-
 /* eslint-disable @typescript-eslint/no-explicit-any, new-cap */
 
 /**
@@ -238,7 +213,7 @@ export function useIf<T, U extends T = T>(
 export function error<T>(
   errorType: new (...args: any[]) => Error = AssertionError,
   message?: string
-): T {
+): never {
   throw new errorType(message);
 }
 
