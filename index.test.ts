@@ -13,7 +13,6 @@ import {
   requires,
   requiresNonNullish,
   unreachable,
-  useIf,
 } from './index';
 
 describe('contracts', () => {
@@ -86,14 +85,18 @@ describe('utils', () => {
     contractTest(
       requiresNonNullish,
       PreconditionError,
-      'Value must be defined'
+      'Value must not be null or undefined'
     );
     contractTest(
       checksNonNullish,
       IllegalStateError,
-      'Callee invariant violation'
+      'Value must not be null or undefined'
     );
-    contractTest(ensuresNonNullish, PostconditionError, 'Unmet postcondition');
+    contractTest(
+      ensuresNonNullish,
+      PostconditionError,
+      'Value must not be null or undefined'
+    );
   });
 
   describe('isDefined', () => {
@@ -106,40 +109,6 @@ describe('utils', () => {
     it('should return false for null-ish values', () => {
       expect(isDefined(undefined)).toBe(false);
       expect(isDefined(null)).toBe(false);
-    });
-  });
-
-  describe('useIf', () => {
-    interface Named {
-      name: string;
-    }
-
-    function isNamed(value: any): value is Named {
-      return value != null && typeof value.name === 'string';
-    }
-
-    it('should return the value if it passes the type guard', () => {
-      const input = { name: 'John' };
-      const ifIsNamed = useIf(isNamed);
-      expect(ifIsNamed(input)).toBe(input);
-    });
-    it('should throw a PreconditionError by default if the value does not pass the type guard', () => {
-      const ifIsNamed = useIf(isNamed);
-      expect(() => ifIsNamed(false)).toThrowError(
-        new PreconditionError('Unmet precondition')
-      );
-    });
-    it('should use the given contract', () => {
-      const ifIsNamed = useIf(isNamed, ensures);
-      expect(() => ifIsNamed(false)).toThrowError(
-        new PostconditionError('Unmet postcondition')
-      );
-    });
-    it('should use the given message for the contract error', () => {
-      const ifIsNamed = useIf(isNamed, ensures, 'Failed!');
-      expect(() => ifIsNamed(false)).toThrowError(
-        new PostconditionError('Failed!')
-      );
     });
   });
 
