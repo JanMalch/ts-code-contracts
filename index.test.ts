@@ -13,7 +13,6 @@ import {
   requires,
   requiresNonNullish,
   unreachable,
-  useIf,
 } from './index';
 
 describe('contracts', () => {
@@ -87,6 +86,42 @@ describe('utils', () => {
     });
   });
 
+  describe('NonNullish contract tests', () => {
+    const contractTest = (
+      contract: <T>(value: T, message?: string) => NonNullable<T>,
+      errorType: new (...args: any[]) => Error,
+      defaultMessage: string
+    ): void => {
+      describe(contract.name, () => {
+        it('should not error if the value is defined', () => {
+          expect(() => contract('A nice String')).not.toThrowError();
+        });
+        it('should throw an Error if the value is not defined', () => {
+          expect(() => contract(null)).toThrowError(
+            // eslint-disable-next-line new-cap
+            new errorType(defaultMessage)
+          );
+        });
+      });
+    };
+
+    contractTest(
+      requiresNonNullish,
+      PreconditionError,
+      'Value must not be null or undefined'
+    );
+    contractTest(
+      checksNonNullish,
+      IllegalStateError,
+      'Value must not be null or undefined'
+    );
+    contractTest(
+      ensuresNonNullish,
+      PostconditionError,
+      'Value must not be null or undefined'
+    );
+  });
+
   describe('isDefined', () => {
     it('should return true for defined values', () => {
       expect(isDefined('TypeScript')).toBe(true);
@@ -97,40 +132,6 @@ describe('utils', () => {
     it('should return false for null-ish values', () => {
       expect(isDefined(undefined)).toBe(false);
       expect(isDefined(null)).toBe(false);
-    });
-  });
-
-  describe('useIf', () => {
-    interface Named {
-      name: string;
-    }
-
-    function isNamed(value: any): value is Named {
-      return value != null && typeof value.name === 'string';
-    }
-
-    it('should return the value if it passes the type guard', () => {
-      const input = { name: 'John' };
-      const ifIsNamed = useIf(isNamed);
-      expect(ifIsNamed(input)).toBe(input);
-    });
-    it('should throw a PreconditionError by default if the value does not pass the type guard', () => {
-      const ifIsNamed = useIf(isNamed);
-      expect(() => ifIsNamed(false)).toThrowError(
-        new PreconditionError('Unmet precondition')
-      );
-    });
-    it('should use the given contract', () => {
-      const ifIsNamed = useIf(isNamed, ensures);
-      expect(() => ifIsNamed(false)).toThrowError(
-        new PostconditionError('Unmet postcondition')
-      );
-    });
-    it('should use the given message for the contract error', () => {
-      const ifIsNamed = useIf(isNamed, ensures, 'Failed!');
-      expect(() => ifIsNamed(false)).toThrowError(
-        new PostconditionError('Failed!')
-      );
     });
   });
 

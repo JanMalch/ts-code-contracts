@@ -26,11 +26,10 @@ You can now import the following functions `from 'ts-code-contracts'`:
 - Utils
   - [`error` to make code more concise](#error)
   - [`isDefined` type guard](#isdefined)
-  - [`useIf` for assignments](#useif)
 
 Make sure to read the `@example`s in the documentation below
 or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L166-L196)
-and [typing assistance](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test-d.ts#L54-L65)!
+and [typing assistance](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test-d.ts#L41-L52)!
 
 ## Contracts
 
@@ -80,7 +79,7 @@ export function requiresNonNullish<T>(
   value: T,
   message = 'Value must not be null or undefined'
 ): NonNullable<T>;
-``` 
+```
 
 ### `checks`
 
@@ -233,14 +232,14 @@ This function will always throw the given error and helps keeping code easy to r
  * @see IllegalStateError
  * @example
  * function myFun(foo: string | null) {
- *   const bar: string = foo ?? error(PreconditionError, 'Argument may not be null');
+ *   const bar = foo ?? error(PreconditionError, 'Argument may not be null');
  *   const result = bar.length > 0 ? 'OK' : error();
  * }
  */
-export function error<T>(
+export function error(
   errorType: new (...args: any[]) => Error = IllegalStateError,
   message?: string
-): T;
+): never;
 ```
 
 ### `isDefined`
@@ -258,32 +257,6 @@ Make sure to use [`strictNullChecks`](https://basarat.gitbook.io/typescript/intr
  * x.toLowerCase(); // no error!
  */
 export function isDefined<T>(value: T): value is NonNullable<T>;
-```
-
-### `useIf`
-
-A function that helps with validating and typing when assigning variables.
-
-```ts
-/**
- * Returns a function that will return the passed in value, if it passes the given predicate.
- * If not, the given contract will throw an error with the given message.
- * @param predicate the predicate that the value must pass
- * @param contract the contract for context
- * @param message the message for the contract
- * @example
- * function myFun(foo: string | null) {
- *   const bar = useIf(isDefined)(foo);
- * }
- */
-export function useIf<T, O extends T = T>(
-  predicate: (value: T | O) => value is O,
-  contract: (
-    condition: boolean,
-    message?: string
-  ) => asserts condition = requires,
-  contractMessage?: string
-): (value: T) => O;
 ```
 
 ## Errors
