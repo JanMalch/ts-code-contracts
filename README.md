@@ -200,7 +200,7 @@ export function unreachable(_value: never): never;
 
 ### `asserts`
 
-Use it for any other assertions, that don't quite fit the other contexts.
+Use it to clarify, that something happened that you thought was impossible to happen.
 
 ```ts
 /**
@@ -211,7 +211,7 @@ Use it for any other assertions, that don't quite fit the other contexts.
  */
 export function asserts(
   condition: boolean,
-  message: string = 'Failed Assertion'
+  message?: string
 ): asserts condition;
 ```
 

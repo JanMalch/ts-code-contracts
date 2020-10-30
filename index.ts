@@ -177,7 +177,7 @@ export function ensuresNonNullish<T>(
  */
 export function asserts(
   condition: boolean,
-  message = 'Failed Assertion'
+  message?: string
 ): asserts condition {
   if (!condition) {
     throw new AssertionError(message);
