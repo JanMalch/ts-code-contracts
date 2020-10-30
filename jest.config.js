@@ -11,7 +11,7 @@ module.exports = {
   collectCoverage: true,
   coverageThreshold: {
     global: {
-      branches: 78, // bug: branch not covered on super call (https://stackoverflow.com/q/52820169)
+      branches: 79, // bug: branch not covered on super call (https://stackoverflow.com/q/52820169)
       functions: 100,
       lines: 100,
       statements: 100,
