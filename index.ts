@@ -210,7 +210,7 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
  *   const result = bar.length > 0 ? 'OK' : error('Something went wrong!');
  * }
  */
-export function error<T>(
+export function error(
   errorType: new (...args: any[]) => Error = AssertionError,
   message?: string
 ): never {
