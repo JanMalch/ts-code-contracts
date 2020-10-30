@@ -206,7 +206,7 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
  * @see AssertionError
  * @example
  * function myFun(foo: string | null) {
- *   const bar: string = foo ?? error(PreconditionError, 'Argument may not be null');
+ *   const bar = foo ?? error(PreconditionError, 'Argument may not be null');
  *   const result = bar.length > 0 ? 'OK' : error('Something went wrong!');
  * }
  */
