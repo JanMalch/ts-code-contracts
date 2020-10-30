@@ -5,7 +5,7 @@
 [![coverage](https://img.shields.io/badge/coverage-100%25-success)](https://github.com/JanMalch/ts-code-contracts/blob/master/jest.config.js#L14-L17)
 [![minified + gzip](https://badgen.net/bundlephobia/minzip/ts-code-contracts)](https://bundlephobia.com/result?p=ts-code-contracts)
 
-_Code contracts to improve your TypeScript code._
+_Design by contract with TypeScript._
 
 ## Installation & Usage
 
@@ -29,7 +29,7 @@ You can now import the following functions `from 'ts-code-contracts'`:
   - [`useIf` for assignments](#useif)
 
 Make sure to read the `@example`s in the documentation below
-or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L137-L165)
+or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L166-L196)
 and [typing assistance](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test-d.ts#L54-L65)!
 
 ## Contracts
@@ -60,6 +60,28 @@ export function requires(
 ): asserts condition;
 ```
 
+#### `requiresNonNullish`
+
+A variation of `requires` that will either return the value if it's defined, or throw if it isn't.
+
+```ts
+/**
+ * Requires the given value not to be `null` or `undefined`, otherwise a `PreconditionError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
+ * @param message an optional message for the error
+ * @see requires
+ * @example
+ * function myFun(name: string | null) {
+ *   const nameNonNull = requiresNonNullish(name, 'Name must be defined');
+ *   nameNonNull.toUpperCase(); // no error!
+ * }
+ */
+export function requiresNonNullish<T>(
+  value: T,
+  message = 'Value must not be null or undefined'
+): NonNullable<T>;
+``` 
+
 ### `checks`
 
 Use it to check for an illegal state.
@@ -84,6 +106,31 @@ export function checks(
 ): asserts condition;
 ```
 
+#### `checksNonNullish`
+
+A variation of `checks` that will either return the value if it's defined, or throw if it isn't.
+
+```ts
+/**
+ * Checks that the given value is not `null` or `undefined`, otherwise a `IllegalStateError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
+ * @param message an optional message for the error
+ * @see checks
+ * @example
+ * class Socket {
+ *   data : Data | null = null;
+ *   send() {
+ *     const dataNonNull = checksNonNullish(this.data, 'Data must be available');
+ *     dataNonNull.send(); // no compiler error!
+ *   }
+ * }
+ */
+export function checksNonNullish<T>(
+  value: T,
+  message = 'Value must not be null or undefined'
+): NonNullable<T>;
+```
+
 ### `ensures`
 
 Use it to verify that your code behaved correctly.
@@ -106,6 +153,29 @@ export function ensures(
   condition: boolean,
   message: string = 'Unmet postcondition'
 ): asserts condition;
+```
+
+#### `ensuresNonNullish`
+
+A variation of `ensures` that will either return the value if it's defined, or throw if it isn't.
+
+```ts
+/**
+ * Ensures that the given value is not `null` or `undefined`, otherwise a `PostconditionError` will be thrown.
+ * @param value the value that must not be `null` or `undefined`
+ * @param message an optional message for the error
+ * @see ensures
+ * @example
+ * function myFun(): Person {
+ *   createPerson({ id: 0, name: 'John' });
+ *   const entity = findById(0); // returns null if not present
+ *   return ensuresNonNullish(entity, 'Failed to persist entity on server');
+ * }
+ */
+export function ensuresNonNullish<T>(
+  value: T,
+  message = 'Value must not be null or undefined'
+): NonNullable<T>;
 ```
 
 ### `unreachable`

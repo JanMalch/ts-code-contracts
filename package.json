@@ -1,7 +1,7 @@
 {
   "name": "ts-code-contracts",
   "version": "1.0.0",
-  "description": "Code Contracts for TypeScript",
+  "description": "Design by contract with TypeScript.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -18,10 +18,9 @@
     "url": "git+https://github.com/JanMalch/ts-code-contracts.git"
   },
   "keywords": [
-    "Code",
     "Contracts",
-    "Code",
-    "Quality",
+    "Code Contracts",
+    "Code Quality",
     "TypeScript"
   ],
   "author": "JanMalch",

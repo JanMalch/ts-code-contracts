@@ -46,6 +46,29 @@ describe('contracts', () => {
   contractTest(asserts, AssertionError, 'Failed Assertion');
 });
 
+describe('NonNullish contracts', () => {
+  const contractTest = (
+    contract: <T>(value: T, message?: string) => NonNullable<T>,
+    errorType: new (...args: any[]) => Error
+  ): void => {
+    describe(contract.name, () => {
+      it('should not error if the value is defined', () => {
+        expect(() => contract('A nice String')).not.toThrowError();
+      });
+      it('should throw an Error if the value is not defined', () => {
+        expect(() => contract(null)).toThrowError(
+          // eslint-disable-next-line new-cap
+          new errorType('Value must not be null or undefined')
+        );
+      });
+    });
+  };
+
+  contractTest(requiresNonNullish, PreconditionError);
+  contractTest(checksNonNullish, IllegalStateError);
+  contractTest(ensuresNonNullish, PostconditionError);
+});
+
 describe('utils', () => {
   describe('error', () => {
     it('should always error', () => {
