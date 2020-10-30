@@ -253,7 +253,8 @@ export function error(
 /**
  * Asserts that a code branch is unreachable. If it is, the compiler will throw a type error.
  * If this function is reached at runtime, an error will be thrown.
- * @param _value a value
+ * @param value a value
+ * @throws AssertionError in any case
  * @example
  * function myFun(foo: MyEnum): string {
  *   switch(foo) {
@@ -263,6 +264,6 @@ export function error(
  *   }
  * }
  */
-export function unreachable(_value: never): never {
-  throw new Error('Reached an unreachable case');
+export function unreachable(value: never): never {
+  throw new AssertionError('Reached an unreachable case');
 }
