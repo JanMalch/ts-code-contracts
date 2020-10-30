@@ -122,7 +122,13 @@ describe('unreachable', () => {
       'Reached an unreachable case'
     );
   });
-
+  it('should always throw an error at runtime with the given message', () => {
+    expectError(
+      () => unreachable(true as never, 'Test'),
+      AssertionError,
+      'Test'
+    );
+  });
   it('should not throw an error when the switch is exhaustive', () => {
     enum MyEnum {
       A,

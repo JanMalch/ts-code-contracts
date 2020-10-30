@@ -209,10 +209,14 @@ Asserts that a code branch is unreachable. If it is, the compiler will throw a t
 If this function is reached at runtime, an error will be thrown.
 
 ```ts
-function unreachable(value: never): never;
+function unreachable(
+  value: never,
+  message = 'Reached an unreachable case'
+): never;
 ```
 
 - `value` - a value
+- `message` - an optional message for the error
 
 **Example:**
 
