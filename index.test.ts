@@ -15,6 +15,20 @@ import {
   unreachable,
 } from './index';
 
+const expectError = (
+  fun: () => unknown,
+  errorType: new (...args: any[]) => Error,
+  message: string
+) => {
+  try {
+    fun();
+    fail('Function should never succeed');
+  } catch (e) {
+    expect(e.name).toBe(errorType.name);
+    expect(e.message).toBe(message);
+  }
+};
+
 describe('contracts', () => {
   const contractTest = (
     contract: (condition: boolean, message?: string) => asserts condition,
@@ -25,16 +39,14 @@ describe('contracts', () => {
       it('should not error if the condition is met', () => {
         expect(() => contract(true)).not.toThrowError();
       });
-      it('should throw a PreconditionError if the condition is not met', () => {
-        expect(() => contract(false)).toThrowError(
-          // eslint-disable-next-line new-cap
-          new errorType(defaultMessage)
-        );
+      it('should throw the associated error if the condition is not met', () => {
+        expectError(() => contract(false), errorType, defaultMessage);
       });
-      it('should throw a PreconditionError with the given message if the condition is not met', () => {
-        expect(() => contract(false, 'Custom message')).toThrowError(
-          // eslint-disable-next-line new-cap
-          new errorType('Custom message')
+      it('should throw the associated error with the given message if the condition is not met', () => {
+        expectError(
+          () => contract(false, 'Custom message'),
+          errorType,
+          'Custom message'
         );
       });
     });
@@ -56,9 +68,10 @@ describe('NonNullish contracts', () => {
         expect(() => contract('A nice String')).not.toThrowError();
       });
       it('should throw an Error if the value is not defined', () => {
-        expect(() => contract(null)).toThrowError(
-          // eslint-disable-next-line new-cap
-          new errorType('Value must not be null or undefined')
+        expectError(
+          () => contract(null),
+          errorType,
+          'Value must not be null or undefined'
         );
       });
     });
@@ -71,20 +84,20 @@ describe('NonNullish contracts', () => {
 
 describe('error', () => {
   it('should always error', () => {
-    expect(() => error()).toThrowError(new IllegalStateError());
+    expectError(() => error(), IllegalStateError, '');
   });
   it('should error with the given type', () => {
-    expect(() => error(PreconditionError)).toThrowError(
-      new PreconditionError()
-    );
+    expectError(() => error(PreconditionError), PreconditionError, '');
   });
   it('should error with the given type and message', () => {
-    expect(() => error(PreconditionError, 'Failed!')).toThrowError(
-      new PreconditionError('Failed!')
+    expectError(
+      () => error(PreconditionError, 'Failed!'),
+      PreconditionError,
+      'Failed!'
     );
   });
   it('should error with the given message', () => {
-    expect(() => error('Failed!')).toThrowError(new AssertionError('Failed!'));
+    expectError(() => error('Failed!'), IllegalStateError, 'Failed!');
   });
 });
 
@@ -103,7 +116,11 @@ describe('isDefined', () => {
 
 describe('unreachable', () => {
   it('should always throw an error at runtime', () => {
-    expect(() => unreachable({} as never)).toThrowError();
+    expectError(
+      () => unreachable(true as never),
+      AssertionError,
+      'Reached an unreachable case'
+    );
   });
 
   it('should not throw an error when the switch is exhaustive', () => {
@@ -163,11 +180,15 @@ describe('examples', () => {
     }
 
     expect(() => signUp('type@script.com', 'abc12345')).not.toThrow();
-    expect(() => signUp('typescript.com', 'abc12345')).toThrowError(
-      new PreconditionError('Value must be a valid email address')
+    expectError(
+      () => signUp('typescript.com', 'abc12345'),
+      PreconditionError,
+      'Value must be a valid email address'
     );
-    expect(() => signUp('type@script.com', '1234')).toThrowError(
-      new PreconditionError('Password must meet requirements')
+    expectError(
+      () => signUp('type@script.com', '1234'),
+      PreconditionError,
+      'Password must meet requirements'
     );
   });
 });
