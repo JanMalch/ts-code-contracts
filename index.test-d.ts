@@ -4,7 +4,6 @@ import {
   ensures,
   requires,
   isDefined,
-  useIf,
   error,
   asserts,
   unreachable,
@@ -35,20 +34,8 @@ function assertsExample(value: string | null) {
 // UTILS
 
 function errorExample(value: string | null) {
-  // error cannot help the compiler to infer the type
   const result = value ?? error();
-  expectError<string>(result);
-  expectType<string | null>(result);
-  // to help the compiler, you can use it like this ...
-  const foo: string = value ?? error();
-  expectType<string>(foo);
-  // ... or like this
-  const bar = value ?? error<string>();
-  expectType<string>(bar);
-}
-
-function useIfExample(value: string | null) {
-  expectType<string>(useIf(isDefined)(value));
+  expectType<string>(result);
 }
 
 interface Named {
@@ -60,7 +47,7 @@ function isNamed(value: any): value is Named {
 }
 
 function useIfTypeGuardExample(value: any) {
-  const withName = useIf(isNamed)(value);
+  const withName = isNamed(value) ? value : error();
   expectType<Named>(withName);
 }
 
