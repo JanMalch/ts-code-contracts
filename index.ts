@@ -44,10 +44,10 @@ export class AssertionError extends ContractError {
 }
 
 /**
- * Requires the given condition to be met, if not a `PreconditionError` will be thrown.
- * Use it to verify argument values.
- * @param condition the condition that must be `true`
+ * Throws a `PreconditionError` if the `condition` is `false`.
+ * @param condition the precondition that should be `true`
  * @param message an optional message for the error
+ * @throws PreconditionError if the condition is `false`
  * @see PreconditionError
  * @example
  * function myFun(name: string) {
@@ -64,9 +64,11 @@ export function requires(
 }
 
 /**
- * Requires the given value not to be `null` or `undefined`, otherwise a `PreconditionError` will be thrown.
- * @param value the value that must not be `null` or `undefined`
+ * Returns the given value unchanged if it is not `null` or `undefined`.
+ * Throws a `PreconditionError` otherwise.
+ * @param value the value that should not be `null` or `undefined`
  * @param message an optional message for the error
+ * @throws PreconditionError if the value is `null` or `undefined`
  * @see requires
  * @example
  * function myFun(name: string | null) {
@@ -83,10 +85,10 @@ export function requiresNonNullish<T>(
 }
 
 /**
- * Checks that the given condition is met, if not a `IllegalStateError` will be thrown.
- * Use it to verify that the object is in a correct state.
- * @param condition the condition that must be `true`
+ * Throws a `IllegalStateError` if the `condition` is `false`.
+ * @param condition the condition that should be `true`
  * @param message an optional message for the error
+ * @throws IllegalStateError if the condition is `false`
  * @see IllegalStateError
  * @example
  * class Socket {
@@ -106,9 +108,11 @@ export function checks(
 }
 
 /**
- * Checks that the given value is not `null` or `undefined`, otherwise a `IllegalStateError` will be thrown.
- * @param value the value that must not be `null` or `undefined`
+ * Returns the given value unchanged if it is not `null` or `undefined`.
+ * Throws a `IllegalStateError` otherwise.
+ * @param value the value that should not be `null` or `undefined`
  * @param message an optional message for the error
+ * @throws IllegalStateError if the value is `null` or `undefined`
  * @see checks
  * @example
  * class Socket {
@@ -128,10 +132,10 @@ export function checksNonNullish<T>(
 }
 
 /**
- * Ensures that the given condition is met, if not a `PostconditionError` will be thrown.
- * Use it to verify that your function behaved correctly.
- * @param condition the condition that must be `true`
+ * Throws a `PostconditionError` if the `condition` is `false`.
+ * @param condition the condition that should be `true`
  * @param message an optional message for the error
+ * @throws PostconditionError if the condition is `false`
  * @see PostconditionError
  * @example
  * async function myFun() {
@@ -150,9 +154,11 @@ export function ensures(
 }
 
 /**
- * Ensures that the given value is not `null` or `undefined`, otherwise a `PostconditionError` will be thrown.
+ * Returns the given value unchanged if it is not `null` or `undefined`.
+ * Throws a `PostconditionError` otherwise.
  * @param value the value that must not be `null` or `undefined`
  * @param message an optional message for the error
+ * @throws PostconditionError if the value is `null` or `undefined`
  * @see ensures
  * @example
  * function myFun(): Person {
@@ -170,9 +176,10 @@ export function ensuresNonNullish<T>(
 }
 
 /**
- * Asserts that the given condition is met, if not a `AssertionError` will be thrown.
+ * Throws a `AssertionError` if the `condition` is `false`.
  * @param condition the condition that must be `true`
  * @param message an optional message for the error
+ * @throws AssertionError if the condition is `false`
  * @see AssertionError
  */
 export function asserts(
@@ -185,12 +192,12 @@ export function asserts(
 }
 
 /**
- * Type guard to check if the given value is not nullable.
+ * Returns `true` if the value is not `null` or `undefined`.
  * @param value the given value
  * @example
  * const x: string | null = 'Hello';
  * check(isDefined(x));
- * x.toLowerCase(); // no error!
+ * x.toLowerCase(); // no compiler error!
  */
 export function isDefined<T>(value: T): value is NonNullable<T> {
   return value != null;
@@ -200,8 +207,8 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
 
 /**
  * Always throws an `IllegalStateError` with the given message.
- * It can come in handy when assigning values with a ternary operator or the null operators.
  * @param message the message for the `IllegalStateError`
+ * @throws IllegalStateError in any case
  * @see IllegalStateError
  * @example
  * function myFun(foo: string | null) {
@@ -212,11 +219,12 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
 export function error(
   message?: string
 ): never;
+
 /**
  * Always throws an error of the given type with the given message.
- * It can come in handy when assigning values with a ternary operator or the null operators.
  * @param errorType an error class
  * @param message the error message
+ * @throws errorType in any case
  * @see IllegalStateError
  * @example
  * function myFun(foo: string | null) {
