@@ -43,7 +43,7 @@ describe('contracts', () => {
   contractTest(requires, PreconditionError, 'Unmet precondition');
   contractTest(checks, IllegalStateError, 'Callee invariant violation');
   contractTest(ensures, PostconditionError, 'Unmet postcondition');
-  contractTest(asserts, AssertionError, 'Failed Assertion');
+  contractTest(asserts, AssertionError, '');
 });
 
 describe('NonNullish contracts', () => {
