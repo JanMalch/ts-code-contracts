@@ -199,6 +199,20 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
 /* eslint-disable @typescript-eslint/no-explicit-any, new-cap */
 
 /**
+ * Always throws an `AssertionError` with the given message.
+ * It can come in handy when assigning values with a ternary operator or the null operators.
+ * @param message the message for the `AssertionError`
+ * @see AssertionError
+ * @example
+ * function myFun(foo: string | null) {
+ *   const bar = foo ?? error(PreconditionError, 'Argument may not be null');
+ *   const result = bar.length > 0 ? 'OK' : error('Something went wrong!');
+ * }
+ */
+export function error(
+  message?: string
+): never;
+/**
  * Always throws an error of the given type with the given message.
  * It can come in handy when assigning values with a ternary operator or the null operators.
  * @param errorType an error class, defaults to `AssertionError`
@@ -211,10 +225,17 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
  * }
  */
 export function error(
-  errorType: new (...args: any[]) => Error = AssertionError,
+  errorType?: new (...args: any[]) => Error,
+  message?: string
+): never;
+
+export function error(
+  errorType: string | (new (...args: any[]) => Error) = AssertionError,
   message?: string
 ): never {
-  throw new errorType(message);
+  throw typeof errorType === 'string'
+    ? new AssertionError(errorType)
+    : new errorType(message);
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any, new-cap */

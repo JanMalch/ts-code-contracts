@@ -84,6 +84,11 @@ describe('utils', () => {
         new PreconditionError('Failed!')
       );
     });
+    it('should error with the given message', () => {
+      expect(() => error('Failed!')).toThrowError(
+        new AssertionError('Failed!')
+      );
+    });
   });
 
   describe('NonNullish contract tests', () => {
