@@ -29,7 +29,7 @@ You can now import the following functions `from 'ts-code-contracts'`:
 - [`isDefined` type guard](#isdefined)
 
 Make sure to checkout the examples in the documentation below
-or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L166-L196)
+or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L133-L163)
 and [typing assistance](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test-d.ts#L41-L52)!
 
 Contracts are really just handy shorthands to throw an error, if the given condition is not met.
