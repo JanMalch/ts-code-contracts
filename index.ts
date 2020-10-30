@@ -73,7 +73,7 @@ export function requires(
  * @example
  * function myFun(name: string | null) {
  *   const nameNonNull = requiresNonNullish(name, 'Name must be defined');
- *   nameNonNull.toUpperCase(); // no error!
+ *   nameNonNull.toUpperCase(); // no compiler error!
  * }
  */
 export function requiresNonNullish<T>(
@@ -96,6 +96,9 @@ export function requiresNonNullish<T>(
  *   send(data: Data) {
  *     check(this.isOpen, 'Socket must be open');
  *   }
+ *   open() {
+ *     this.isOpen = true;
+ *   }
  * }
  */
 export function checks(
@@ -116,10 +119,10 @@ export function checks(
  * @see checks
  * @example
  * class Socket {
- *   data : Data | null = null;
+ *   data: Data | null = null;
  *   send() {
- *     const dataNonNull = checksNonNullish(this.data, 'Data must be available');
- *     dataNonNull.send(); // no compiler error!
+ *     const validData = checksNonNullish(this.data, 'Data must be available');
+ *     validData.send(); // no compiler error!
  *   }
  * }
  */
@@ -138,10 +141,10 @@ export function checksNonNullish<T>(
  * @throws PostconditionError if the condition is `false`
  * @see PostconditionError
  * @example
- * async function myFun() {
- *   await createPerson({ id: 0, name: 'John' });
- *   const entity = await findById(0); // returns null if not present
- *   ensures(isDefined(entity), 'Failed to persist entity on server');
+ * function myFun() {
+ *   createPerson({ id: 0, name: 'John' });
+ *   const entity = findById(0); // returns null if not present
+ *   return ensures(isDefined(entity), 'Failed to persist entity');
  * }
  */
 export function ensures(
@@ -164,7 +167,7 @@ export function ensures(
  * function myFun(): Person {
  *   createPerson({ id: 0, name: 'John' });
  *   const entity = findById(0); // returns null if not present
- *   return ensuresNonNullish(entity, 'Failed to persist entity on server');
+ *   return ensuresNonNullish(entity, 'Failed to persist entity');
  * }
  */
 export function ensuresNonNullish<T>(
@@ -193,11 +196,12 @@ export function asserts(
 
 /**
  * Returns `true` if the value is not `null` or `undefined`.
- * @param value the given value
+ * @param value the value to test
  * @example
  * const x: string | null = 'Hello';
- * check(isDefined(x));
- * x.toLowerCase(); // no compiler error!
+ * if (isDefined(x)) {
+ *   x.toLowerCase(); // no compiler error!
+ * }
  */
 export function isDefined<T>(value: T): value is NonNullable<T> {
   return value != null;
@@ -216,9 +220,7 @@ export function isDefined<T>(value: T): value is NonNullable<T> {
  *   const result = bar.length > 0 ? 'OK' : error('Something went wrong!');
  * }
  */
-export function error(
-  message?: string
-): never;
+export function error(message?: string): never;
 
 /**
  * Always throws an error of the given type with the given message.
@@ -260,6 +262,7 @@ export function error(
  *   switch(foo) {
  *     case MyEnum.A: return 'a';
  *     case MyEnum.B: return 'b';
+ *     // no compiler error if MyEnum only has A and B
  *     default: unreachable(foo);
  *   }
  * }

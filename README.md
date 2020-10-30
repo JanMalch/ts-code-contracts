@@ -17,246 +17,262 @@ npm i ts-code-contracts
 
 You can now import the following functions `from 'ts-code-contracts'`:
 
-- Contracts
-  - [`requires` for preconditions](#requires)
-  - [`checks` for illegal states](#checks)
-  - [`ensures` for postconditions](#ensures)
-  - [`unreachable` for unreachable code branches](#unreachable)
-  - [`asserts` for any other assertion](#asserts)
-- Utils
-  - [`error` to make code more concise](#error)
-  - [`isDefined` type guard](#isdefined)
+- [`requires` for preconditions](#requires)
+  - [`requiresNonNullish` for null-checks as preconditions](#requiresnonnullish)
+- [`checks` for invariants](#checks)
+  - [`checksNonNullish` for null-checks as invariants](#checksnonnullish)
+- [`ensures` for postconditions](#ensures)
+  - [`ensuresNonNullish` for null-checks as postconditions](#ensuresnonnullish)
+- [`asserts` for impossible events](#asserts)
+- [`unreachable` for unreachable code branches](#unreachable)
+- [`error` to make code more concise](#error)
+- [`isDefined` type guard](#isdefined)
 
-Make sure to read the `@example`s in the documentation below
+Make sure to checkout the examples in the documentation below
 or refer to the [test cases](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test.ts#L166-L196)
 and [typing assistance](https://github.com/JanMalch/ts-code-contracts/blob/master/index.test-d.ts#L41-L52)!
 
-## Contracts
+Contracts are really just handy shorthands to throw an error, if the given condition is not met.
+And yet they greatly help the compiler and the readability of your code.
 
-The following functions are the core of this library.
-They are just handy shorthands to throw an error, if the given condition is not met.
-And yet they greatly help the compiler and the readability of your code. Make sure to fail fast!
+## `requires`
 
-### `requires`
-
-Use it for preconditions, like validating arguments.
+Use it to validate preconditions, like validating arguments.
+Throws a `PreconditionError` if the `condition` is `false`.
 
 ```ts
-/**
- * Requires the given condition to be met, if not a `PreconditionError` will be thrown.
- * Use it to verify argument values.
- * @param condition the condition that must be `true`
- * @param message an optional message for the error
- * @see PreconditionError
- * @example
- * function myFun(name: string) {
- *   requires(name.length > 10, 'Name must be longer than 10 chars');
- * }
- */
-export function requires(
+function requires(
   condition: boolean,
   message: string = 'Unmet precondition'
 ): asserts condition;
 ```
 
-#### `requiresNonNullish`
+- `condition` - the condition that should be `true`
+- `message` - an optional message for the error
 
-A variation of `requires` that will either return the value if it's defined, or throw if it isn't.
+**Example:**
 
 ```ts
-/**
- * Requires the given value not to be `null` or `undefined`, otherwise a `PreconditionError` will be thrown.
- * @param value the value that must not be `null` or `undefined`
- * @param message an optional message for the error
- * @see requires
- * @example
- * function myFun(name: string | null) {
- *   const nameNonNull = requiresNonNullish(name, 'Name must be defined');
- *   nameNonNull.toUpperCase(); // no error!
- * }
- */
-export function requiresNonNullish<T>(
+function myFun(name: string) {
+  requires(name.length > 10, 'Name must be longer than 10 chars');
+}
+```
+
+## `requiresNonNullish`
+
+A variation of `requires` that returns the given value unchanged if it is not `null` or `undefined`.
+Throws a `PreconditionError` otherwise.
+
+```ts
+function requiresNonNullish<T>(
   value: T,
   message = 'Value must not be null or undefined'
 ): NonNullable<T>;
 ```
 
-### `checks`
+- `value` - the value that should not be `null` or `undefined`
+- `message` - an optional message for the error
+
+**Example:**
+
+```ts
+function myFun(name: string | null) {
+  const nameNonNull = requiresNonNullish(name, 'Name must be defined');
+  nameNonNull.toUpperCase(); // no compiler error!
+}
+```
+
+## `checks`
 
 Use it to check for an illegal state.
+Throws a `IllegalStateError` if the `condition` is `false`.
 
 ```ts
-/**
- * Checks that the given condition is met, if not a `IllegalStateError` will be thrown.
- * Use it to verify that the object is in a correct state.
- * @param condition the condition that must be `true`
- * @param message an optional message for the error
- * @see IllegalStateError
- * @example
- * class Socket {
- *   send(data: Data) {
- *     check(this.isOpen, 'Socket must be open');
- *   }
- * }
- */
-export function checks(
+function checks(
   condition: boolean,
-  message: string = 'Callee invariant violation'
+  message = 'Callee invariant violation'
 ): asserts condition;
 ```
 
-#### `checksNonNullish`
+- `condition` - the condition that should be `true`
+- `message` - an optional message for the error
 
-A variation of `checks` that will either return the value if it's defined, or throw if it isn't.
+**Example:**
 
 ```ts
-/**
- * Checks that the given value is not `null` or `undefined`, otherwise a `IllegalStateError` will be thrown.
- * @param value the value that must not be `null` or `undefined`
- * @param message an optional message for the error
- * @see checks
- * @example
- * class Socket {
- *   data : Data | null = null;
- *   send() {
- *     const dataNonNull = checksNonNullish(this.data, 'Data must be available');
- *     dataNonNull.send(); // no compiler error!
- *   }
- * }
- */
-export function checksNonNullish<T>(
+class Socket {
+  private isOpen = false;
+  send(data: Data) {
+    check(this.isOpen, 'Socket must be open');
+  }
+  open() {
+    this.isOpen = true;
+  }
+}
+```
+
+## `checksNonNullish`
+
+A variation of `checks` that returns the given value unchanged if it is not `null` or `undefined`.
+Throws a `IllegalStateError` otherwise.
+
+```ts
+function checksNonNullish<T>(
   value: T,
   message = 'Value must not be null or undefined'
 ): NonNullable<T>;
 ```
 
-### `ensures`
+- `value` - the value that should not be `null` or `undefined`
+- `message` - an optional message for the error
+
+**Example:**
+
+```ts
+class Socket {
+  data: Data | null = null;
+  send() {
+    const validData = checksNonNullish(this.data, 'Data must be available');
+    validData.send(); // no compiler error!
+  }
+}
+```
+
+## `ensures`
 
 Use it to verify that your code behaved correctly.
+Throws a `PostconditionError` if the `condition` is `false`.
 
 ```ts
-/**
- * Ensures that the given condition is met, if not a `PostconditionError` will be thrown.
- * Use it to verify that your function behaved correctly.
- * @param condition the condition that must be `true`
- * @param message an optional message for the error
- * @see PostconditionError
- * @example
- * async function myFun() {
- *   await post({ id: 0, name: 'John' });
- *   const entity = await get(0);
- *   ensures(isDefined(entity), 'Failed to persist entity on server');
- * }
- */
-export function ensures(
+function ensures(
   condition: boolean,
-  message: string = 'Unmet postcondition'
+  message = 'Unmet postcondition'
 ): asserts condition;
 ```
 
-#### `ensuresNonNullish`
+- `condition` - the condition that should be `true`
+- `message` - an optional message for the error
 
-A variation of `ensures` that will either return the value if it's defined, or throw if it isn't.
+**Example:**
 
 ```ts
-/**
- * Ensures that the given value is not `null` or `undefined`, otherwise a `PostconditionError` will be thrown.
- * @param value the value that must not be `null` or `undefined`
- * @param message an optional message for the error
- * @see ensures
- * @example
- * function myFun(): Person {
- *   createPerson({ id: 0, name: 'John' });
- *   const entity = findById(0); // returns null if not present
- *   return ensuresNonNullish(entity, 'Failed to persist entity on server');
- * }
- */
-export function ensuresNonNullish<T>(
+function myFun() {
+  createPerson({ id: 0, name: 'John' });
+  const entity = findById(0); // returns null if not present
+  return ensures(isDefined(entity), 'Failed to persist entity');
+}
+```
+
+## `ensuresNonNullish`
+
+A variation of `ensures` that returns the given value unchanged if it is not `null` or `undefined`.
+Throws a `PostconditionError` otherwise.
+
+```ts
+function ensuresNonNullish<T>(
   value: T,
   message = 'Value must not be null or undefined'
 ): NonNullable<T>;
 ```
 
-### `unreachable`
+- `value` - the value that should not be `null` or `undefined`
+- `message` - an optional message for the error
 
-Use it to assert that a code branch is unreachable.
+**Example:**
 
 ```ts
-/**
- * Asserts that a code branch is unreachable. If it is, the compiler will throw a type error.
- * If this function is reached at runtime, an error will be thrown.
- * @param _value a value
- * @example
- * function myFun(foo: MyEnum): string {
- *   switch(foo) {
- *     case MyEnum.A: return 'a';
- *     case MyEnum.B: return 'b';
- *     default: unreachable(foo);
- *   }
- * }
- */
-export function unreachable(_value: never): never;
+function myFun(): Person {
+  createPerson({ id: 0, name: 'John' });
+  const entity = findById(0); // returns null if not present
+  return ensuresNonNullish(entity, 'Failed to persist entity');
+}
 ```
 
-### `asserts`
+## `asserts`
 
-Use it to clarify, that something happened that you thought was impossible to happen.
+Clarify that you think that the given condition is impossible to happen.
+Throws a `AssertionError` if the `condition` is `false`.
 
 ```ts
-/**
- * Asserts that the given condition is met, if not a `AssertionError` will be thrown.
- * @param condition the condition that must be `true`
- * @param message an optional message for the error
- * @see AssertionError
- */
-export function asserts(
+asserts(
   condition: boolean,
   message?: string
 ): asserts condition;
 ```
 
-## Utils
+- `condition` - the condition that should be `true`
+- `message` - an optional message for the error
 
-The following functions do help you write even more concise code.
+## `unreachable`
 
-### `error`
-
-This function will always throw the given error and helps keeping code easy to read.
+Asserts that a code branch is unreachable. If it is, the compiler will throw a type error.
+If this function is reached at runtime, an error will be thrown.
 
 ```ts
-/**
- * Always throws an error of the given type with the given message.
- * It can come in handy when assigning values with a ternary operator or the null operators.
- * @param errorType an error class, defaults to `AssertionError`
- * @param message the error message
- * @see IllegalStateError
- * @example
- * function myFun(foo: string | null) {
- *   const bar = foo ?? error(PreconditionError, 'Argument may not be null');
- *   const result = bar.length > 0 ? 'OK' : error();
- * }
- */
-export function error(
-  errorType: new (...args: any[]) => Error = IllegalStateError,
+function unreachable(value: never): never;
+```
+
+- `value` - a value
+
+**Example:**
+
+```ts
+function myFun(foo: MyEnum): string {
+  switch (foo) {
+    case MyEnum.A:
+      return 'a';
+    case MyEnum.B:
+      return 'b';
+    // no compiler error if MyEnum only has A and B
+    default:
+      unreachable(foo);
+  }
+}
+```
+
+## `error`
+
+This function will always throw an error.
+It helps keeping code easy to read and come in handy when assigning values with a ternary operator or the null-safe operators.
+
+```ts
+function error(message?: string): never;
+function error(
+  errorType: new (...args: any[]) => Error,
   message?: string
 ): never;
 ```
 
-### `isDefined`
+- `errorType` - an error class, defaults to `IllegalStateError`
+- `message` - an optional message for the error
 
-A common type guard, to check that a value is defined.
+**Example:**
+
+```ts
+function myFun(foo: string | null) {
+  const bar = foo ?? error(PreconditionError, 'Argument may not be null');
+  const result = bar.length > 0 ? 'OK' : error('Something went wrong!');
+}
+```
+
+## `isDefined`
+
+A type guard, to check that a value is not `null` or `undefined`.
 Make sure to use [`strictNullChecks`](https://basarat.gitbook.io/typescript/intro/strictnullchecks).
 
 ```ts
-/**
- * Type guard to check if the given value is not nullable.
- * @param value the given value
- * @example
- * const x: string | null = 'Hello';
- * check(isDefined(x));
- * x.toLowerCase(); // no error!
- */
-export function isDefined<T>(value: T): value is NonNullable<T>;
+function isDefined<T>(value: T): value is NonNullable<T>;
+```
+
+- `value` - the value to test
+
+**Example:**
+
+```ts
+const x: string | null = 'Hello';
+if (isDefined(x)) {
+  x.toLowerCase(); // no compiler error!
+}
 ```
 
 ## Errors
