@@ -1,6 +1,6 @@
 # ts-code-contracts <a href="https://www.github.com/JanMalch/ts-code-contracts"><img src="https://user-images.githubusercontent.com/25508038/63974103-75242700-caac-11e9-8ca4-71cc5b905e90.png" width="90" height="90" align="right"></a>
 
-[![npm](https://badgen.net/bpm/v/ts-code-contracts)](https://www.npmjs.com/package/ts-code-contracts)
+[![npm](https://img.shields.io/npm/v/ts-code-contracts)](https://www.npmjs.com/package/ts-code-contracts)
 [![Build](https://github.com/JanMalch/ts-code-contracts/workflows/Build/badge.svg)](https://github.com/JanMalch/ts-code-contracts/workflows/Build)
 [![coverage](https://img.shields.io/badge/coverage-100%25-success)](https://github.com/JanMalch/ts-code-contracts/blob/master/jest.config.js#L14-L17)
 [![minified + gzip](https://badgen.net/bundlephobia/minzip/ts-code-contracts)](https://bundlephobia.com/result?p=ts-code-contracts)
