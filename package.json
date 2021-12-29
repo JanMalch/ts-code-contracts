@@ -11,7 +11,8 @@
     "build": "tsc -p tsconfig.json",
     "lint": "eslint --fix index.ts",
     "prettier": "npx prettier --write **/*.{ts,html,scss,json,js,json,md,yaml} --ignore-path .gitignore",
-    "release": "npx standard-version"
+    "release": "npx standard-version",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -39,7 +40,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^4.3.0",
+    "husky": "^7.0.0",
     "jest": "^27.4.5",
     "lint-staged": "^12.1.4",
     "prettier": "^2.5.1",
@@ -57,11 +58,5 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged --relative --concurrent=1",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   }
 }
