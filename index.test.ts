@@ -23,7 +23,7 @@ const expectError = (
   try {
     fun();
     fail('Function should never succeed');
-  } catch (e) {
+  } catch (e: any) {
     expect(e.name).toBe(errorType.name);
     expect(e.message).toBe(message);
   }
