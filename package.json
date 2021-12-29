@@ -14,6 +14,10 @@
     "release": "npx standard-version",
     "prepare": "husky install"
   },
+  "files": [
+    "CHANGELOG.md",
+    "index.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JanMalch/ts-code-contracts.git"
